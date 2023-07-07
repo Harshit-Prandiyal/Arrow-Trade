@@ -1,31 +1,45 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import {useFonts} from 'expo-font';
+import { StyleSheet, Text, View, } from "react-native";
+import { StatusBar } from "expo-status-bar";
+
+import { NavigationContainer } from "@react-navigation/native";
+
+import { useFonts } from "expo-font";
+
+import { MyTabs } from "./components/MyTabs";
+
+
+
+
 export default function App() {
+  
   const [fontsLoaded] = useFonts({
-    'Eudoxus-Sans-Bold': require('./assets/fonts/EudoxusSans-Bold.ttf'),
+    "Eudoxus-Sans-Bold": require("./assets/fonts/EudoxusSans-Bold.ttf"),
   });
-  if(!fontsLoaded){
-    return <View>
-      <Text>Loading...</Text>
-    </View>
+  if (!fontsLoaded) {
+    return (
+      <View>
+        <Text>Loading...</Text>
+      </View>
+    );
   }
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <>
+      <StatusBar style="dark" />
+      <NavigationContainer>
+        <MyTabs />
+      </NavigationContainer>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
   },
-  title:{
-    fontFamily:'Eudoxus-Sans-Bold',
+  title: {
+    fontFamily: "Eudoxus-Sans-Bold",
   },
 });
