@@ -4,13 +4,13 @@ import { View, Text, StyleSheet, Image, TouchableOpacity,ScrollView } from "reac
 import { SafeAreaView } from "react-native-safe-area-context";
 
 //style imports
-import { useFonts } from "expo-font";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 //my impoerts
 import { Colors } from "../constants/colors";
 import Portfolio from "../components/PortfolioItem";
 import YourWatchList from "../components/YourWatchList";
+import MyText from "../components/MyText";
 const portfolioData = [
   {
     id: 1,
@@ -51,17 +51,6 @@ const portfolioData = [
 
 
 export default function HomeViewScreen() {
-  const [fontsLoaded] = useFonts({
-    "Eudoxus-Sans-Bold": require("../assets/fonts/EudoxusSans-Bold.ttf"),
-    "Eudoxus-Sans-Regular": require("../assets/fonts/EudoxusSans-Regular.ttf"),
-  });
-  if (!fontsLoaded) {
-    return (
-      <View>
-        <Text>Loading...</Text>
-      </View>
-    );
-  }
   return (
     <View style={styles.root}>
       <ScrollView contentContainerStyle={styles.container}>
@@ -74,17 +63,8 @@ export default function HomeViewScreen() {
               source={require("../assets/images/avatar.png")}
             />
             <View  >
-              <Text style={{ fontFamily: "Eudoxus-Sans-Bold", fontSize: 18 }}>
-                Hi, Kitsbase!
-              </Text>
-              <Text
-                style={{
-                  fontFamily: "Eudoxus-Sans-Regular",
-                  color: Colors.lightgray,
-                }}
-              >
-                Welcome to Tradebase
-              </Text>
+              <MyText isBold={true} size={18} color={"black"} >Hi, Kitsbase!</MyText>
+              <MyText isBold={false} size={14} color={Colors.lightgray} >Welcome to Tradebase</MyText>
             </View>
           </View>
           <Ionicons name="grid-outline" size={24} color="black" />
