@@ -1,5 +1,4 @@
 //components imports
-import { StatusBar } from "expo-status-bar";
 import {
   View,
   Text,
