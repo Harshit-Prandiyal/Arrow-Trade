@@ -6,4 +6,5 @@ export const Colors={
     lightblue:'#908FEC',
     darkishwhite:'#F3FBED',
     whitishgrey:'#F9FAFB',
+    purpleblue:'#908FEC',
 }

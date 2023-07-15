@@ -7,7 +7,9 @@ export default function MyText({children,color,size,isBold,extrastyles}){
       });
       if (!fontsLoaded) {
         return (
-            <Text>{children}</Text>
+            <Text style={{...(size && {fontSize:size}),
+            ...(color && {color:color}),
+            ...(extrastyles && extrastyles),}} >{children}</Text>
         );
       }
       return (

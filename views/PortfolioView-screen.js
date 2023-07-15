@@ -35,7 +35,7 @@ export default function PortfolioViewScreen() {
       </View>
       {/** Header section with gains and losses ends */}
       <View style={styles.scrollContainer} >
-
+          
       </View>
     </View>
   );
