@@ -4,11 +4,7 @@ import {
   VictoryChart,
   VictoryTheme,
   VictoryAxis,
-  VictoryLegend,
-  VictoryTooltip,
-  VictoryLabel,
 } from "victory-native";
-import { Defs, LinearGradient, Stop } from "react-native-svg";
 
 import { Colors } from "../constants/colors";
 
@@ -65,6 +61,7 @@ export default function ProfileViewScreen() {
         />
       </VictoryChart>
       </TouchableOpacity>
+      
     </View>
   );
 }

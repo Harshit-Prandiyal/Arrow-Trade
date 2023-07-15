@@ -5,7 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 //my imports
 import MyText from "./MyText";
 
-function renderWatchlistItem({ item }) {
+export function renderWatchlistItem({ item }) {
   return (
     <TouchableOpacity>
       <View
