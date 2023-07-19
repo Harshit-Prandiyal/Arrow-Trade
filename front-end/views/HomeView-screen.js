@@ -1,4 +1,5 @@
 //components imports
+import { useState,useEffect } from "react";
 import {
   View,
   Text,
@@ -12,50 +13,72 @@ import { SafeAreaView } from "react-native-safe-area-context";
 //style imports
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-//my impoerts
+//my imports
 import { Colors } from "../constants/colors";
 import Portfolio from "../components/PortfolioItem";
 import YourWatchList from "../components/YourWatchList";
 import MyText from "../components/MyText";
-const portfolioData = [
-  {
-    id: 1,
-    ticker: "FB",
-    name: "Facebook, Inc",
-    price: 365.51,
-    profit: 0.59,
-  },
-  {
-    id: 2,
-    ticker: "AAPL",
-    name: "Apple, Inc",
-    price: 149.62,
-    profit: 0.38,
-  },
-  {
-    id: 3,
-    ticker: "AMZN",
-    name: "Amazon, Inc",
-    price: 400.31,
-    profit: 100,
-  },
-  {
-    id: 4,
-    ticker: "AMZN",
-    name: "Amazon, Inc",
-    price: 400.31,
-    profit: 100,
-  },
-  {
-    id: 5,
-    ticker: "AMZN",
-    name: "Amazon, Inc",
-    price: 400.31,
-    profit: 100,
-  },
-];
+///api requests 
+import { fetchBasicData } from "../util/basicData";
 
 export default function HomeViewScreen() {
+  const [portfolioData, setPortfolioData] = useState([
+    {
+      id: 1,
+      ticker: "FB",
+      name: "Facebook, Inc",
+      price: 365.51,
+      profit: 0.59,
+    },
+    {
+      id: 2,
+      ticker: "AAPL",
+      name: "Apple, Inc",
+      price: 149.62,
+      profit: 0.38,
+    },
+    {
+      id: 3,
+      ticker: "AMZN",
+      name: "Amazon, Inc",
+      price: 400.31,
+      profit: 100,
+    },
+    {
+      id: 4,
+      ticker: "AMZN",
+      name: "Amazon, Inc",
+      price: 400.31,
+      profit: 100,
+    },
+    {
+      id: 5,
+      ticker: "AMZN",
+      name: "Amazon, Inc",
+      price: 400.31,
+      profit: 100,
+    },
+  ]);
+  const myPortfolio = [
+    {
+      id: "bitcoin",
+    },
+    {
+      id:"tether",
+    },
+  ];
+
+  useEffect(() => {
+    try{
+      ( async ()=>{
+        const data = await fetchBasicData(myPortfolio);
+        console.log(data);
+    } )()
+    }catch(err){
+      console.log(err);
+    }
+  }, []);
+
   return (
     <View style={styles.root}>
       <ScrollView contentContainerStyle={styles.container}>
