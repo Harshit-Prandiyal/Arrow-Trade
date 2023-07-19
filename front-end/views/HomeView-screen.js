@@ -22,43 +22,7 @@ import MyText from "../components/MyText";
 import { fetchBasicData } from "../util/basicData";
 
 export default function HomeViewScreen() {
-  const [portfolioData, setPortfolioData] = useState([
-    {
-      id: 1,
-      ticker: "FB",
-      name: "Facebook, Inc",
-      price: 365.51,
-      profit: 0.59,
-    },
-    {
-      id: 2,
-      ticker: "AAPL",
-      name: "Apple, Inc",
-      price: 149.62,
-      profit: 0.38,
-    },
-    {
-      id: 3,
-      ticker: "AMZN",
-      name: "Amazon, Inc",
-      price: 400.31,
-      profit: 100,
-    },
-    {
-      id: 4,
-      ticker: "AMZN",
-      name: "Amazon, Inc",
-      price: 400.31,
-      profit: 100,
-    },
-    {
-      id: 5,
-      ticker: "AMZN",
-      name: "Amazon, Inc",
-      price: 400.31,
-      profit: 100,
-    },
-  ]);
+  const [portfolioData, setPortfolioData] = useState([]);
   const myPortfolio = [
     {
       id: "bitcoin",
@@ -66,13 +30,18 @@ export default function HomeViewScreen() {
     {
       id:"tether",
     },
+    {
+      id:"solana",
+    }
   ];
 
   useEffect(() => {
     try{
       ( async ()=>{
         const data = await fetchBasicData(myPortfolio);
-        console.log(data);
+        if(data){
+          setPortfolioData(data);
+        }
     } )()
     }catch(err){
       console.log(err);

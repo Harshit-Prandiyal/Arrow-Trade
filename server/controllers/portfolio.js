@@ -14,7 +14,6 @@ function generateUrl(body){
     return url;
 }
 async function handleGetPortfolio(req, res) {
-    console.log(req.body)
     const tickers = req.body.tickers;
     if(!tickers){
         return res.json({ error: 'provide a body with stock names' });
@@ -22,7 +21,20 @@ async function handleGetPortfolio(req, res) {
     const url = generateUrl(tickers);
     axios.get(url)
         .then(data => {
-            const returndata = data.data;
+            const fetchdata = data.data;
+            let returndata = [];
+            for (const i in fetchdata) {
+                const ticker = fetchdata[i];
+                const tickerData = {
+                    id: ticker.id,
+                    symbol: ticker.symbol,
+                    name: ticker.name,
+                    image: ticker.image,
+                    current_price: ticker.current_price,
+                    price_change_percentage_24h: ticker.price_change_percentage_24h,
+                }
+                returndata.push(tickerData);
+            }
             return res.json(returndata);
         })
         .catch(err => {

@@ -6,6 +6,10 @@ import { Ionicons } from "@expo/vector-icons";
 import MyText from "./MyText";
 
 export function renderWatchlistItem({ item }) {
+  const imageUrl = item.image ? item.image  :  "https://assets.coingecko.com/coins/images/1/small/bitcoin.png?1547033579";
+  const wentUp = item.price_change_percentage_24h >= 0 ? true : false;
+  const price_change_percentage_24h = item.price_change_percentage_24h > 0 ? item.price_change_percentage_24h : -1*item.price_change_percentage_24h;
+    
   return (
     <TouchableOpacity>
       <View
@@ -25,11 +29,11 @@ export function renderWatchlistItem({ item }) {
           <Image
             style={{ ...styles.image, height: 40, width: 40,marginLeft:5, }}
             source={{
-              uri: "https://assets.coingecko.com/coins/images/1/small/bitcoin.png?1547033579",
+              uri:imageUrl,
             }}
           />
           <View style={{ flexShrink: 1 ,}}>
-            <MyText isBold={true}>{item.ticker}</MyText>
+            <MyText isBold={true}>{item.symbol.toUpperCase()}</MyText>
             <MyText
               isBold={true}
               color={Colors.lightgray}
@@ -40,10 +44,10 @@ export function renderWatchlistItem({ item }) {
           </View>
         </View>
         <View  >
-          <MyText isBold={true} >${item.price}</MyText>
+          <MyText isBold={true} >${item.current_price}</MyText>
           <View style={{flexDirection:'row' ,alignItems:'center',justifyContent:'flex-end' }} >
-          <Ionicons name="triangle" size={7} color={Colors.pink} />
-          <MyText isBold={true} size={10} color={Colors.pink} >$0.23%</MyText>
+          <Ionicons name={wentUp?"caret-up-outline" :"caret-down-outline"} size={12} color={wentUp ? Colors.green69: Colors.pink} />
+          <MyText isBold={true} size={10} color={wentUp ? Colors.green69: Colors.pink} >{price_change_percentage_24h.toFixed(2)}%</MyText>
           </View>
         </View>
       </View>
