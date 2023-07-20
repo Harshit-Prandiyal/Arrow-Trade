@@ -1,5 +1,6 @@
 import { View, Image, TouchableOpacity } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Ionicons } from "@expo/vector-icons";
 
 import HomeViewScreen from "../views/HomeView-screen";
@@ -7,6 +8,16 @@ import ExchangeViewScreen from "../views/ExchangeView-screen";
 import PortfolioViewScreen from "../views/PortfolioView-screen";
 import ProfileViewScreen from "../views/ProfileView-screen";
 import OrderHistoryViewScreen from "../views/OrderHistoryView-screen";
+import StockDetailViewScreen from "../views/StockDetailView-screen";
+const Stack = createNativeStackNavigator();
+function HomescreenNavigator() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="HomeScreen" component={HomeViewScreen} />
+      <Stack.Screen name="StockDetailScreen" component={StockDetailViewScreen} />
+    </Stack.Navigator>
+  );
+}
 
 import { Colors } from "../constants/colors";
 const CustomTabBarButton = ({ children, onPress }) => (
@@ -49,8 +60,8 @@ export function MyTabs() {
       }}
     >
       <Tab.Screen
-        name="HomeScreen"
-        component={HomeViewScreen}
+        name="HomeScreenNavigator"
+        component={HomescreenNavigator}
         options={{
           tabBarIcon: ({ color }) => (
             <View style={{ alignItems: "center", justifyContent: "center" }}>

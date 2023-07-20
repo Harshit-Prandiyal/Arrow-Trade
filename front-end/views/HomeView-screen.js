@@ -18,10 +18,11 @@ import { Colors } from "../constants/colors";
 import Portfolio from "../components/PortfolioItem";
 import YourWatchList from "../components/YourWatchList";
 import MyText from "../components/MyText";
+import { handleGoToStockDetail } from "../controllers/Home-controller";
 ///api requests 
 import { fetchBasicData } from "../util/basicData";
 
-export default function HomeViewScreen() {
+export default function HomeViewScreen({navigation}) {
   const [portfolioData, setPortfolioData] = useState([]);
   const myPortfolio = [
     {
@@ -47,7 +48,9 @@ export default function HomeViewScreen() {
       console.log(err);
     }
   }, []);
-
+  const handlePortfolioPress = (id) => {
+    handleGoToStockDetail(navigation, id);
+  }
   return (
     <View style={styles.root}>
       <ScrollView contentContainerStyle={styles.container}>
@@ -119,9 +122,9 @@ export default function HomeViewScreen() {
           </View>
         </LinearGradient>
         {/* PORTFOLIO */}
-        <Portfolio data={portfolioData} />
+        <Portfolio data={portfolioData} onPress={handlePortfolioPress} />
         {/* Your Washlist */}
-        <YourWatchList data={portfolioData} />
+        <YourWatchList data={portfolioData} onPress={handlePortfolioPress} />
       </ScrollView>
     </View>
   );

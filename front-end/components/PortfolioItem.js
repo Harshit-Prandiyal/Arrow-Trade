@@ -8,13 +8,37 @@ import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "../constants/colors";
 import { FlatList } from "react-native";
 import MyText from "./MyText";
-const renderPortfolioItem = ({ item }) => {     
+const EmptyPortfolio = () => {
+  return (
+    <View
+      style={{
+        height: 170,
+        backgroundColor: Colors.whitishgrey,
+        margin: 5,
+        borderRadius: 10,
+        justifyContent: "center",
+        alignItems: "center", 
+      }}
+    >
+      <MyText isBold={true} size={16} color={Colors.lightgray} >
+        Add coins to your portfolio
+      </MyText>
+    </View>
+  );
+};
+
+export default  function Portfolio({data,onPress}) {
+
+
+  const renderPortfolioItem = ({ item }) => {     
     const imageUrl = item.image ? item.image  :  "https://assets.coingecko.com/coins/images/1/small/bitcoin.png?1547033579";
     const wentUp = item.price_change_percentage_24h >= 0 ? true : false;
     const price_change_percentage_24h = item.price_change_percentage_24h > 0 ? item.price_change_percentage_24h : -1*item.price_change_percentage_24h;
-    
+    const pressHandler = () => {
+      onPress(item.id);
+    }
     return (
-      <TouchableOpacity>
+      <TouchableOpacity onPress={pressHandler}>
       <View
         style={{
           height: 170,
@@ -54,7 +78,8 @@ const renderPortfolioItem = ({ item }) => {
       </TouchableOpacity>
     );
   };
-export default  function Portfolio({data}) {
+
+
     return (
       <View style={{ width: "95%" ,marginBottom:10}}>
         <View
@@ -71,12 +96,12 @@ export default  function Portfolio({data}) {
             <MyText isBold={true} size={16} color={Colors.pink} >View all</MyText>
           </TouchableOpacity>
         </View>
-        <FlatList
+        { data.length!==0 ? <FlatList
           data={data}
           renderItem={renderPortfolioItem}
           keyExtractor={(item) => item.id}
           horizontal={true}
-        />
+        /> : <EmptyPortfolio />}
       </View>
     );
   }
