@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const url = 'http://192.168.1.10:8000/api';
+const url = 'http://192.168.1.10:8000/api/getUserData';
 export function fetchBasicData(dataArr){
 
     return axios.post(url, { tickers: dataArr })
