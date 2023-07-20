@@ -111,7 +111,55 @@ function Gains({children,value,isGain}){
     </View>
   );
 }
-
+function MyChart(){
+  return <VictoryChart theme={VictoryTheme.material} alignment='middle' domainPadding={{ x: 20,y:10 }} >
+  <VictoryAxis  />
+  <VictoryAxis
+    dependentAxis
+    //tickFormat specifies how ticks should be displayed
+    tickFormat={(x) => `$.${x / 1000}k`}
+  />
+  <VictoryBar
+    style={{ data: { fill: Colors.purpleblue } }}
+    data={[
+      { x: "Mon", y: 1000 },
+      { x: "Tue", y: 2000 },
+      { x: "Wed", y: 5000 },
+      { x: "Thu", y: 1500 },
+      { x: "Fri", y: 2750 },
+      { x: "Sat", y: 3400 },
+      { x: "Sun", y: 3500 },
+    ]}
+    labels={({ datum }) => ``}
+    cornerRadius={10}
+    barWidth={26}
+    barRatio={0.7}
+    events={[{
+      target: "data",
+      eventHandlers: {
+        onPressIn: () => {
+          return [
+            {
+              target: "data",
+              mutation: (props) => {
+                const fill = props.style && props.style.fill;
+                return fill ===  Colors.pink ? null : { style: { fill: Colors.pink } };
+              }
+            },
+            {
+              target: "labels",
+              mutation: (props) => {
+                return props.text === `Rs.${props.datum.y / 1000}k` ?
+                  "" : { text: `Rs.${props.datum.y / 1000}k` }
+              }
+            },
+          ];
+        }
+      }
+    }]}
+  />
+</VictoryChart>
+}
 export default function PortfolioViewScreen() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -128,53 +176,7 @@ export default function PortfolioViewScreen() {
       {/** Header section with gains and losses ends */}
       <View style={styles.scrollContainer} >
       <TouchableOpacity>
-      <VictoryChart theme={VictoryTheme.material} alignment='middle' >
-        <VictoryAxis  />
-        <VictoryAxis
-          dependentAxis
-          //tickFormat specifies how ticks should be displayed
-          tickFormat={(x) => `Rs.${x / 1000}k`}
-        />
-        <VictoryBar
-          style={{ data: { fill: Colors.purpleblue } }}
-          data={[
-            { x: "Mon", y: 1000 },
-            { x: "Tue", y: 2000 },
-            { x: "Wed", y: 5000 },
-            { x: "Thu", y: 1500 },
-            { x: "Fri", y: 2750 },
-            { x: "Sat", y: 3400 },
-            { x: "Sun", y: 3500 },
-          ]}
-          labels={({ datum }) => ``}
-          cornerRadius={10}
-          barWidth={26}
-          barRatio={0.7}
-          events={[{
-            target: "data",
-            eventHandlers: {
-              onPressIn: () => {
-                return [
-                  {
-                    target: "data",
-                    mutation: (props) => {
-                      const fill = props.style && props.style.fill;
-                      return fill ===  Colors.pink ? null : { style: { fill: Colors.pink } };
-                    }
-                  },
-                  {
-                    target: "labels",
-                    mutation: (props) => {
-                      return props.text === `Rs.${props.datum.y / 1000}k` ?
-                        "" : { text: `Rs.${props.datum.y / 1000}k` }
-                    }
-                  },
-                ];
-              }
-            }
-          }]}
-        />
-      </VictoryChart>
+      <MyChart />
       </TouchableOpacity>
       
       <View style={{marginBottom:120, width: "95%" ,alignItems:'center'}} > 
