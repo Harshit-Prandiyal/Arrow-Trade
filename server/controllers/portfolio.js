@@ -16,7 +16,7 @@ function generateUrl(body){
 async function handleGetPortfolio(req, res) {
     const tickers = req.body.tickers;
     if(!tickers){
-        return res.json({ error: 'provide a body with stock names' });
+        return res.json({ error: 'provide a body with stock ids' });
     }
     const url = generateUrl(tickers);
     axios.get(url)
@@ -39,7 +39,7 @@ async function handleGetPortfolio(req, res) {
         })
         .catch(err => {
             console.log('Error: ', err.message);
-            return res.json({ error: 'stock api gave a error' });
+            return res.json({ error: 'Basic Stock api gave an error' });
         });
 }
 module.exports={handleGetPortfolio };
