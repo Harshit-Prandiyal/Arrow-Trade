@@ -27,7 +27,7 @@ const EmptyPortfolio = () => {
   );
 };
 
-export default  function Portfolio({data,onPress}) {
+export default  function Portfolio({data,onPress,viewAllPressHandler}) {
 
 
   const renderPortfolioItem = ({ item }) => {     
@@ -92,7 +92,7 @@ export default  function Portfolio({data,onPress}) {
           }}
         >
           <MyText isBold={true} size={18} color={"black"} >Portfolio</MyText>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={viewAllPressHandler}>
             <MyText isBold={true} size={16} color={Colors.pink} >View all</MyText>
           </TouchableOpacity>
         </View>

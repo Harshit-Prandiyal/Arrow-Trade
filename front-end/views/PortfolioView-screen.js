@@ -1,3 +1,4 @@
+import { useEffect,useState } from "react";
 import { View, Text, StyleSheet,TouchableOpacity,Image } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context'
 import {
@@ -12,47 +13,19 @@ import { Ionicons } from "@expo/vector-icons";
 //component imports
 import MyText from "../components/MyText";
 import { ScrollView } from "react-native";
+import { handleGoToStockDetail } from "../controllers/Portfolio-controller";
+///api requests 
+import { fetchBasicData } from "../util/basicData";
 
-const portfolioData = [
-  {
-    key: 1,
-    ticker: "FB",
-    name: "Facebook, Inc",
-    price: 365.51,
-    profit: 0.59,
-  },
-  {
-    key: 2,
-    ticker: "AAPL",
-    name: "Apple, Inc",
-    price: 149.62,
-    profit: 0.38,
-  },
-  {
-    key: 3,
-    ticker: "AMZN",
-    name: "Amazon, Inc",
-    price: 400.31,
-    profit: 100,
-  },
-  {
-    key: 4,
-    ticker: "AMZN",
-    name: "Amazon, Inc",
-    price: 400.31,
-    profit: 100,
-  },
-  {
-    key: 5,
-    ticker: "AMZN",
-    name: "Amazon, Inc",
-    price: 400.31,
-    profit: 100,
-  },
-];
-function DisplayStockData({ item }) {
+
+
+
+function DisplayStockData({ item ,onPress}) {
+  const imageUrl = item.image ? item.image  :  "https://assets.coingecko.com/coins/images/1/small/bitcoin.png?1547033579";
+    const wentUp = item.price_change_percentage_24h >= 0 ? true : false;
+    const price_change_percentage_24h = item.price_change_percentage_24h > 0 ? item.price_change_percentage_24h : -1*item.price_change_percentage_24h;
   return (
-    <TouchableOpacity>
+    <TouchableOpacity onPress={()=>{onPress(item.id)}} >
       <View
       style={{
         height: 100,
@@ -70,11 +43,11 @@ function DisplayStockData({ item }) {
           <Image
             style={{ ...styles.image, height: 40, width: 40,marginLeft:5, }}
             source={{
-              uri: "https://assets.coingecko.com/coins/images/1/small/bitcoin.png?1547033579",
+              uri: imageUrl,
             }}
           />
           <View style={{ flexShrink: 1 ,}}>
-            <MyText isBold={true}>{item.ticker}</MyText>
+            <MyText isBold={true}>{item.symbol.toUpperCase()}</MyText>
             <MyText
               isBold={true}
               color={Colors.lightgray}
@@ -85,10 +58,10 @@ function DisplayStockData({ item }) {
           </View>
         </View>
         <View style={{alignItems:'center',justifyContent:'center'}} >
-          <MyText isBold={true} >${item.price}</MyText>
+          <MyText isBold={true} >${item.current_price}</MyText>
           <View style={{flexDirection:'row' ,alignItems:'center',justifyContent:'flex-end' }} >
-          <Ionicons name="triangle" size={7} color={Colors.pink} />
-          <MyText isBold={true} size={10} color={Colors.pink} >$0.23%</MyText>
+          <Ionicons name={wentUp?"caret-up-outline" :"caret-down-outline"} size={7} color={wentUp ? Colors.green69 :Colors.pink} />
+          <MyText isBold={true} size={10} color={wentUp ? Colors.green69 :Colors.pink} >${price_change_percentage_24h.toFixed(2)}%</MyText>
           </View>
         </View>
       </View>
@@ -160,7 +133,35 @@ function MyChart(){
   />
 </VictoryChart>
 }
-export default function PortfolioViewScreen() {
+export default function PortfolioViewScreen({navigation}) {
+  const [portfolioData, setPortfolioData] = useState([]);
+  const myPortfolio = [
+    {
+      id: "bitcoin",
+    },
+    {
+      id:"tether",
+    },
+    {
+      id:"solana",
+    }
+  ];
+
+  useEffect(() => {
+    try{
+      ( async ()=>{
+        const data = await fetchBasicData(myPortfolio);
+        if(data){
+          setPortfolioData(data);
+        }
+    } )()
+    }catch(err){
+      console.log(err);
+    }
+  }, []); 
+  const handleStockDetailPress = (id) => {
+    handleGoToStockDetail(navigation, id);
+  }
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {/** portfolio headinng + gains and losses starts */}
@@ -194,8 +195,9 @@ export default function PortfolioViewScreen() {
             <MyText isBold={true} size={16} color={Colors.pink} >View all</MyText>
           </TouchableOpacity>
         </View>
-          { (portfolioData).map( (item)=>{
-              return <DisplayStockData item={item} />
+          { (portfolioData).map( (item,index)=>{
+              const uniqueKey =  index || item.id ;
+              return <DisplayStockData key={uniqueKey} item={item} onPress={handleStockDetailPress} />
           } )   }
       </View>
       </View>

@@ -12,9 +12,17 @@ import StockDetailViewScreen from "../views/StockDetailView-screen";
 const Stack = createNativeStackNavigator();
 function HomescreenNavigator() {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="HomeScreen" component={HomeViewScreen} />
+    <Stack.Navigator screenOptions={{ headerShown: true ,
+      headerStyle: {
+      backgroundColor: '#fff',
+      elevation: 0,
+      shadowOpacity: 0,
+      borderBottomWidth: 0,
+      },
+      }}>
+      <Stack.Screen name="HomeScreen" component={HomeViewScreen} options={{headerShown:false}} />
       <Stack.Screen name="StockDetailScreen" component={StockDetailViewScreen} />
+      <Stack.Screen name="PortfolioScreen" component={PortfolioViewScreen} options={{headerShown:false}} />
     </Stack.Navigator>
   );
 }
