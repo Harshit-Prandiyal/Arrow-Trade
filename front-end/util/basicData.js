@@ -5,7 +5,7 @@ export function fetchBasicData(dataArr){
 
     return axios.post(url, { tickers: dataArr })
     .then((response) => {
-        console.log("request successfully sent!");
+        console.log("Basic Data request successfully sent!");
         return response.data;
     })
     .catch((error) => {

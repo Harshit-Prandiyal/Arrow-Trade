@@ -23,10 +23,25 @@ function HomescreenNavigator() {
       <Stack.Screen name="HomeScreen" component={HomeViewScreen} options={{headerShown:false}} />
       <Stack.Screen name="StockDetailScreen" component={StockDetailViewScreen} />
       <Stack.Screen name="PortfolioScreen" component={PortfolioViewScreen} options={{headerShown:false}} />
+      <Stack.Screen name="ExchangeScreen" component={ExchangeViewScreen} />
     </Stack.Navigator>
   );
 }
-
+function ExchangeScreenNavigator() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: true ,
+      headerStyle: {
+      backgroundColor: '#fff',
+      elevation: 0,
+      shadowOpacity: 0,
+      borderBottomWidth: 0,
+      },
+      }}>
+      <Stack.Screen name="ExchangeScreen" component={ExchangeViewScreen} options={{headerShown:false}} />
+      <Stack.Screen name="StockDetailScreen" component={StockDetailViewScreen} />
+    </Stack.Navigator>
+  );
+}
 import { Colors } from "../constants/colors";
 const CustomTabBarButton = ({ children, onPress }) => (
   <TouchableOpacity
@@ -98,8 +113,8 @@ export function MyTabs() {
         }}
       />
       <Tab.Screen
-        name="ExchangeScreen"
-        component={ExchangeViewScreen}
+        name="ExchangeScreenNavigator"
+        component={ExchangeScreenNavigator}
         options={{
           tabBarIcon: ({ color }) => (
             <Ionicons
