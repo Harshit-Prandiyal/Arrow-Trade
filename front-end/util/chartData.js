@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const url = 'http://192.168.1.10:8000/api/getStockDetails';
+const url = 'http://192.168.39.155:8000/api/getStockDetails';
 export function fetchChartData(id){
 
     return axios.post(url, { id: id })
