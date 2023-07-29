@@ -21,33 +21,27 @@ import MyText from "../components/MyText";
 import { handleGoToStockDetail ,handleGoToPortfolio} from "../controllers/Home-controller";
 ///api requests 
 import { fetchBasicData } from "../util/basicData";
-
+import { useSelector } from "react-redux";
 export default function HomeViewScreen({navigation}) {
   const [portfolioData, setPortfolioData] = useState([]);
-  const myPortfolio = [
-    {
-      id: "bitcoin",
-    },
-    {
-      id:"tether",
-    },
-    {
-      id:"solana",
-    }
-  ];
+  const myPortfolio = useSelector((state) => state.MyPortfolio);
+  const myWatchlist = useSelector((state) => state.MyWatchlist);
+  //console.log('Portfolio ',myPortfolio);
 
   useEffect(() => {
     try{
       ( async ()=>{
-        const data = await fetchBasicData(myPortfolio);
+        if(myPortfolio.length>0){
+          const data = await fetchBasicData(myPortfolio);
         if(data){
           setPortfolioData(data);
+        }
         }
     } )()
     }catch(err){
       console.log(err);
     }
-  }, []);
+  }, [myPortfolio]);
   const handlePortfolioPress = (id) => {
     handleGoToStockDetail(navigation, id);
   }

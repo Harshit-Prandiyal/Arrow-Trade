@@ -18,6 +18,7 @@ async function handleGetPortfolio(req, res) {
     if(!tickers){
         return res.json({ error: 'provide a body with stock ids' });
     }
+    console.log(tickers);
     const url = generateUrl(tickers);
     axios.get(url)
         .then(data => {
