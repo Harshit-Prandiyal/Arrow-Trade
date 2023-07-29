@@ -18,23 +18,31 @@ import { Colors } from "../constants/colors";
 import Portfolio from "../components/PortfolioItem";
 import YourWatchList from "../components/YourWatchList";
 import MyText from "../components/MyText";
-import { handleGoToStockDetail ,handleGoToPortfolio} from "../controllers/Home-controller";
+import { handleGoToStockDetail ,handleGoToPortfolio,joinAndRemoveDuplicates,filterResponseByPortfolio} from "../controllers/Home-controller";
 ///api requests 
 import { fetchBasicData } from "../util/basicData";
 import { useSelector } from "react-redux";
 export default function HomeViewScreen({navigation}) {
   const [portfolioData, setPortfolioData] = useState([]);
+  const [watchlistData, setwatchlistData] = useState([]);
   const myPortfolio = useSelector((state) => state.MyPortfolio);
   const myWatchlist = useSelector((state) => state.MyWatchlist);
-  //console.log('Portfolio ',myPortfolio);
-
+  console.log('My Portfolio',myPortfolio);
+  console.log('My Watchlist',myWatchlist);
+  const fetchIds = joinAndRemoveDuplicates(myPortfolio,myWatchlist);
+ console.log('FetchIds',fetchIds);
   useEffect(() => {
     try{
       ( async ()=>{
-        if(myPortfolio.length>0){
-          const data = await fetchBasicData(myPortfolio);
+        if(fetchIds.length>0){
+          const data = await fetchBasicData(fetchIds);
+          console.log(data);
         if(data){
-          setPortfolioData(data);
+          const yourPortfolio = filterResponseByPortfolio(data,myPortfolio);
+          console.log('Your Portfolio ',yourPortfolio);
+          setPortfolioData(yourPortfolio);
+          const yourWatchlist = filterResponseByPortfolio(data,myWatchlist);
+          setwatchlistData(yourWatchlist);
         }
         }
     } )()
@@ -121,7 +129,7 @@ export default function HomeViewScreen({navigation}) {
         {/* PORTFOLIO */}
         <Portfolio data={portfolioData} onPress={handlePortfolioPress} viewAllPressHandler={portfolioViewAllPressHandler} />
         {/* Your Washlist */}
-        <YourWatchList data={portfolioData} onPress={handlePortfolioPress} />
+        <YourWatchList data={watchlistData} onPress={handlePortfolioPress} />
       </ScrollView>
     </View>
   );

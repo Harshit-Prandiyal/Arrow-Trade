@@ -1,10 +1,6 @@
 import axios from 'axios';
 const url = 'http://192.168.39.155:8000/api/getUserData';
 export function fetchBasicData(dataArr){
-    let postData=[];
-    for(let i=0;i<dataArr.length;i++){
-        postData.push({id: dataArr[i].id});
-    }
     return axios.post(url, { tickers: dataArr })
     .then((response) => {
         console.log("Basic Data request successfully sent!");
