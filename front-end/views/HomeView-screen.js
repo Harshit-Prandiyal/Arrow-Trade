@@ -27,28 +27,25 @@ export default function HomeViewScreen({navigation}) {
   const [watchlistData, setwatchlistData] = useState([]);
   const myPortfolio = useSelector((state) => state.MyPortfolio);
   const myWatchlist = useSelector((state) => state.MyWatchlist);
-  console.log('My Portfolio',myPortfolio);
-  console.log('My Watchlist',myWatchlist);
   const fetchIds = joinAndRemoveDuplicates(myPortfolio,myWatchlist);
- console.log('FetchIds',fetchIds);
   useEffect(() => {
     try{
       ( async ()=>{
         if(fetchIds.length>0){
           const data = await fetchBasicData(fetchIds);
-          console.log(data);
+          // console.log(data);
         if(data){
           const yourPortfolio = filterResponseByPortfolio(data,myPortfolio);
-          console.log('Your Portfolio ',yourPortfolio);
+          // console.log('Your Portfolio ',yourPortfolio);
           setPortfolioData(yourPortfolio);
           const yourWatchlist = filterResponseByPortfolio(data,myWatchlist);
-          setwatchlistData(yourWatchlist);
+           setwatchlistData(yourWatchlist);
         }
         }
     } )()
     }catch(err){
       console.log(err);
-    }
+    } 
   }, [myPortfolio]);
   const handlePortfolioPress = (id) => {
     handleGoToStockDetail(navigation, id);

@@ -23,7 +23,7 @@ import { convertDateToId } from "../controllers/StockDetail-controller";
 import MyText from "../components/MyText";
 // api requests
 import { fetchChartData } from "../util/chartData";
-
+import { fetchHOLCData } from "../util/ohlcData";
 const chartData = [
   {
     x: "Fri Jul 14 2023",
@@ -77,17 +77,41 @@ const chartData = [
 ];
 const HeaderWithBackButton = () => {
   return (
-    <SafeAreaView style={{width:'95%',flexDirection:'row',justifyContent:'center',marginVertical:10,alignItems:'center'}} >
-     
-        <TouchableOpacity style={{marginLeft:25}} >
-          <Ionicons name="chevron-back-circle-outline" size={30} color="black" />
-        </TouchableOpacity>
-      
-     <View style={{flexDirection:"row",flex:1,alignItems:'center',justifyContent:'center',backgroundColor:'red'}} >
-      <MyText isBold={true} size={20} >Coin Detail</MyText>
-     </View>
-     <View style={{flexDirection:"row",flex:1,alignItems:'center',justifyContent:'center',backgroundColor:'blue'}} >
-     </View>
+    <SafeAreaView
+      style={{
+        width: "95%",
+        flexDirection: "row",
+        justifyContent: "center",
+        marginVertical: 10,
+        alignItems: "center",
+      }}
+    >
+      <TouchableOpacity style={{ marginLeft: 25 }}>
+        <Ionicons name="chevron-back-circle-outline" size={30} color="black" />
+      </TouchableOpacity>
+
+      <View
+        style={{
+          flexDirection: "row",
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "red",
+        }}
+      >
+        <MyText isBold={true} size={20}>
+          Coin Detail
+        </MyText>
+      </View>
+      <View
+        style={{
+          flexDirection: "row",
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "blue",
+        }}
+      ></View>
     </SafeAreaView>
   );
 };
@@ -129,26 +153,42 @@ function MyChart({ chartData }) {
 }
 
 export default function StockDetailViewScreen({ route, navigation }) {
-  // const [chartData, setChartData] = useState([]);
-  // const { id } = route.params;
-  // useEffect(() => {
-  //   try {
-  //     (async () => {
-  //       console.log(id);
-  //       const data = await fetchChartData(id);
-  //       if (data) {
-  //         const chartData = convertDateToId(data);
-  //         setChartData(chartData);
-  //         console.log(chartData);
-  //       }
-  //     })();
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // }, []);
-  const wentUp = true;
-  const price_change_percentage_24h = 12.34;
-
+  const [chartData, setChartData] = useState([]);
+  const [stats, setStats] = useState({});
+  const { id } = route.params;
+  useEffect(() => {
+    try {
+      (async () => {
+        //console.log(id);
+        const data = await fetchChartData(id);
+        if (data) {
+          const chartData = convertDateToId(data);
+          setChartData(chartData);
+          //console.log(chartData);
+        }
+      })();
+    } catch (err) {
+      console.log(err);
+    }
+    try {
+      (async () => {
+        //console.log(id);
+        const data = await fetchHOLCData(id);
+        if (data) {
+          setStats(data);
+        }
+      })();
+    } catch (err) {
+      console.log(err);
+    }
+  }, []);
+  const wentUp = stats.price_change_percentage_24h>=0 ? true : false;
+  const price_change_percentage_24h = stats.price_change_percentage_24h>=0
+    ? stats.price_change_percentage_24h
+    : stats.price_change_percentage_24h*-1;
+  const image = stats.image
+    ? stats.image
+    : "https://assets.coingecko.com/coins/images/1/small/bitcoin.png?1547033579";
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View
@@ -169,15 +209,15 @@ export default function StockDetailViewScreen({ route, navigation }) {
         >
           <Image
             source={{
-              uri: "https://assets.coingecko.com/coins/images/1/small/bitcoin.png?1547033579",
+              uri: image,
             }}
             style={{ width: 50, height: 50, marginRight: 10 }}
           />
           <View>
             <MyText isBold={true} size={16}>
-              SPOT
+              {stats.symbol.toUpperCase()}
             </MyText>
-            <MyText color={Colors.lightgray}>(Spotify)</MyText>
+            <MyText color={Colors.lightgray}>{stats.name}</MyText>
           </View>
         </View>
         <View
@@ -241,12 +281,26 @@ export default function StockDetailViewScreen({ route, navigation }) {
           marginBottom: 120,
         }}
       >
-        <StatItem name="Open" value={224.54} isPrice={true} />
-        <StatItem name="High" value={227.29} isPrice={true} />
-        <StatItem name="Low" value={224.1} isPrice={true} />
-        <StatItem name="Volume" value={834146} />
-        <StatItem name="Avg. Volume" value={1461009} />
-        <StatItem name="Market Cap" value={43419000000} isPrice={true} />
+        <StatItem
+          name="High"
+          value={stats.high ? stats.high : 227.29}
+          isPrice={true}
+        />
+        <StatItem
+          name="Low"
+          value={stats.low ? stats.low : 224.1}
+          isPrice={true}
+        />
+
+        <StatItem
+          name="Total Volume"
+          value={stats.volume ? stats.volume : 1461009}
+        />
+        <StatItem
+          name="Market Cap"
+          value={stats.market_cap ? stats.market_cap : 43419000000}
+          isPrice={true}
+        />
       </View>
     </ScrollView>
   );
