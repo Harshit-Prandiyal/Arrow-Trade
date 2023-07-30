@@ -13,93 +13,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import MyText from "../components/MyText";
 import { Colors } from "../constants/colors";
 import { fetchBasicData } from "../util/basicData";
+import { fetchCoinList } from "../util/coinList";
 import { Ionicons } from "@expo/vector-icons";
 import { addToPortfolio } from "../models/PortfolioSlice";
 import { addToWatchlist } from "../models/WatchlistSlice";
-import { useDispatch, useSelector } from "react-redux";
-const dummyData = [
-  {
-    id: "bitcoin",
-    symbol: "btc",
-    name: "Bitcoin",
-    image:
-      "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
-    current_price: 29475.13,
-    price_change_percentage_24h: 0.95857,
-  },
-  {
-    id: "tether",
-    symbol: "usdt",
-    name: "Tether",
-    image:
-      "https://assets.coingecko.com/coins/images/325/large/Tether.png?1668148663",
-    current_price: 1,
-    price_change_percentage_24h: -0.01924,
-  },
-  {
-    id: "solana",
-    symbol: "sol",
-    name: "Solana",
-    image:
-      "https://assets.coingecko.com/coins/images/4128/large/solana.png?1640133422",
-    current_price: 25.17,
-    price_change_percentage_24h: 7.30701,
-  },
-  {
-    id: "solana",
-    symbol: "sol",
-    name: "Solana",
-    image:
-      "https://assets.coingecko.com/coins/images/4128/large/solana.png?1640133422",
-    current_price: 25.17,
-    price_change_percentage_24h: 7.30701,
-  },
-  {
-    id: "solana",
-    symbol: "sol",
-    name: "Solana",
-    image:
-      "https://assets.coingecko.com/coins/images/4128/large/solana.png?1640133422",
-    current_price: 25.17,
-    price_change_percentage_24h: 7.30701,
-  },
-  {
-    id: "solana",
-    symbol: "sol",
-    name: "Solana",
-    image:
-      "https://assets.coingecko.com/coins/images/4128/large/solana.png?1640133422",
-    current_price: 25.17,
-    price_change_percentage_24h: 7.30701,
-  },
-  {
-    id: "solana",
-    symbol: "sol",
-    name: "Solana",
-    image:
-      "https://assets.coingecko.com/coins/images/4128/large/solana.png?1640133422",
-    current_price: 25.17,
-    price_change_percentage_24h: 7.30701,
-  },
-  {
-    id: "solana",
-    symbol: "sol",
-    name: "Solana",
-    image:
-      "https://assets.coingecko.com/coins/images/4128/large/solana.png?1640133422",
-    current_price: 25.17,
-    price_change_percentage_24h: 7.30701,
-  },
-  {
-    id: "solana",
-    symbol: "sol",
-    name: "Solana",
-    image:
-      "https://assets.coingecko.com/coins/images/4128/large/solana.png?1640133422",
-    current_price: 25.17,
-    price_change_percentage_24h: 7.30701,
-  },
-];
 function DisplayStockData({ item, onPress }) {
   const imageUrl = item.image
     ? item.image
@@ -176,22 +93,10 @@ function DisplayStockData({ item, onPress }) {
 }
 
 export default function ExchangeViewScreen() {
-  const items = useSelector((state) => state.MyWatchlist);
-  const dispatch = useDispatch();
-  console.log(items);
+  
   const [id, setId] = useState("");
   const [portfolioData, setPortfolioData] = useState([]);
-  const myPortfolio = [
-    {
-      id: "bitcoin",
-    },
-    {
-      id: "tether",
-    },
-    {
-      id: "solana",
-    },
-  ];
+
   function handleCoinBuy(id) {
     const str = `Add ${id} ?`;
     Alert.alert(str, `Select appropriate option :- `, [
@@ -219,17 +124,16 @@ export default function ExchangeViewScreen() {
     ]);
   }
   useEffect(() => {
-    // try{
-    //   ( async ()=>{
-    //     const data = await fetchBasicData(myPortfolio);
-    //     if(data){
-    //       setPortfolioData(data);
-    //     }
-    // } )()
-    // }catch(err){
-    //   console.log(err);
-    // }
-    setPortfolioData(dummyData);
+    try{
+      ( async ()=>{
+        const data = await fetchCoinList();
+        if(data){
+          setPortfolioData(data);
+        }
+    } )()
+    }catch(err){
+      console.log(err);
+    }
   }, []);
   return (
     <View style={styles.container}>
