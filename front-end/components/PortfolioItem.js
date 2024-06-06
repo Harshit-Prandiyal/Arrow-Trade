@@ -35,7 +35,7 @@ export default  function Portfolio({data,onPress,viewAllPressHandler}) {
     const wentUp = item.price_change_percentage_24h >= 0 ? true : false;
     const price_change_percentage_24h = item.price_change_percentage_24h > 0 ? item.price_change_percentage_24h : -1*item.price_change_percentage_24h;
     const pressHandler = () => {
-      onPress(item.id);
+      onPress({id : item.id , current_price : item.current_price});
     }
     return (
       <TouchableOpacity onPress={pressHandler}>

@@ -1,76 +1,206 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { VictoryChart, VictoryTheme, VictoryCandlestick ,VictoryAxis} from "victory-native";
-
+import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { Colors } from "../constants/colors";
-const chartData = [
-  {
-    x: "Fri Jul 14 2023",
-    open: 24.38,
-    high: 30.05,
-    low: 24.38,
-    close: 28.07,
-  },
-  {
-    x: "Sat Jul 15 2023",
-    open: 28.18,
-    high: 28.99,
-    low: 26.1,
-    close: 28.06,
-  },
-  {
-    x: "Sun Jul 16 2023",
-    open: 27.79,
-    high: 28.4,
-    low: 27.03,
-    close: 28.4,
-  },
-  {
-    x: "Mon Jul 17 2023",
-    open: 28.14,
-    high: 28.17,
-    low: 27.05,
-    close: 27.24,
-  },
-  {
-    x: "Tue Jul 18 2023",
-    open: 26.94,
-    high: 26.94,
-    low: 25.08,
-    close: 25.43,
-  },
-  {
-    x: "Wed Jul 19 2023",
-    open: 25.47,
-    high: 26.47,
-    low: 25.26,
-    close: 26.09,
-  },
-  {
-    x: "Thu Jul 20 2023",
-    open: 26.34,
-    high: 27.26,
-    low: 26.26,
-    close: 27.04,
-  },
-];
-function MyChart({chartData}){
-  chartData.reverse();
-  return <VictoryChart theme={VictoryTheme.material} domainPadding={{ x: 15,y:10 }} alignment='middle' >
-        <VictoryAxis  tickFormat={x => `${x.substring(0,3)}`}/>
-          <VictoryAxis dependentAxis  tickFormat={t => `$${t}`} />
-          <VictoryCandlestick
-            candleColors={{ positive: Colors.Darkblue, negative: Colors.pink }}
-            data={chartData}
+import { Dimensions } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import MyText from "../components/MyText";
+import { useSelector } from "react-redux";
+import { Ionicons, FontAwesome, Entypo } from "@expo/vector-icons";
+const screenWidth = Dimensions.get("window").width;
+const Header = () => {
+  return (
+    <SafeAreaView>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          width: "90%",
+          marginTop: 10,
+        }}
+      >
+        <MyText size={20} isBold={true}>
+          Profile
+        </MyText>
+        <MyText color={Colors.pink} size={15} isBold={true}>
+          Edit Profile
+        </MyText>
+      </View>
+    </SafeAreaView>
+  );
+};
+const ProfileImg = ({ name, email }) => {
+  return (
+    <View
+      style={{
+        flexDirection: "row",
+        width: "100%",
+        marginHorizontal: 15,
+        height: 70,
+        marginTop: 35,
+      }}
+    >
+      <View
+        style={{
+          flex: 3,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <View
+          style={{
+            height: 50,
+            width: 50,
+            borderRadius: 25,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Image
+            resizeMode="cover"
+            source={require("../assets/images/avatar.png")}
           />
-        </VictoryChart>
-}
+        </View>
+      </View>
+      <View
+        style={{ flex: 7, alignItems: "flex-start", justifyContent: "center" }}
+      >
+        <MyText size={22} isBold={true}>
+          {name}
+        </MyText>
+        <MyText color={Colors.lightgray} size={12}>
+          {email}
+        </MyText>
+      </View>
+    </View>
+  );
+};
+const ReferalBox = ({ name, email }) => {
+  return (
+    <View
+      style={{
+        flexDirection: "row",
+        width: "90%",
+        marginHorizontal: 15,
+        height: 70,
+        marginTop: 35,
+        borderRadius: 16,
+        backgroundColor: "#F3FBED",
+      }}
+    >
+      <View
+        style={{
+          flex: 2,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <View
+          style={{
+            height: 50,
+            width: 50,
+            borderRadius: 25,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Ionicons name={"gift-sharp"} size={30} color={Colors.pink} />
+        </View>
+      </View>
+      <View
+        style={{ flex: 8, alignItems: "flex-start", justifyContent: "center" }}
+      >
+        <MyText size={18} isBold={true}>
+          {name}
+        </MyText>
+        <MyText color={Colors.lightgray} size={12}>
+          {email}
+        </MyText>
+      </View>
+    </View>
+  );
+};
 export default function ProfileViewScreen() {
+  const user = useSelector((state) => state.auth.user);
   return (
     <View style={styles.container}>
-      <Text> profile screen </Text>
-      <TouchableOpacity>
-        <MyChart chartData={chartData} />
-      </TouchableOpacity>
+      <Header />
+      <ProfileImg name={user.name} email={user.email} />
+      <ReferalBox
+        name={"Referral Code"}
+        email={"Share your friend get $20 of free cryptos"}
+      />
+      <View style={{ marginTop: 20, width: "100%" , flex:1  ,justifyContent:'flex-start' }}>
+        {/* Billing and payments  */}
+        <View
+          style={{
+            marginHorizontal: 15,
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems:'center'
+          }}
+        >
+          <View style={{flexDirection: "row",justifyContent:'flex-start'}} >
+          <FontAwesome name="credit-card-alt" size={25} color={Colors.pink} />
+          <MyText size={16} isBold={true} extrastyles={{ marginLeft: 15 }}>
+            Billing/Payments
+          </MyText>
+          </View>
+          <Ionicons name="chevron-forward" size={20} />
+        </View>
+        {/* Language */}
+        <View
+          style={{
+            marginTop:20,
+            marginHorizontal: 15,
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems:'center'
+          }}
+        >
+          <View style={{flexDirection: "row",justifyContent:'flex-start'}} >
+          <Entypo name="language" size={25} color={Colors.pink} />
+          <MyText size={16} isBold={true} extrastyles={{ marginLeft: 15 }}>
+            Language
+          </MyText>
+          </View>
+          <Ionicons name="chevron-forward" size={20} />
+        </View>
+         {/* Language */}
+         <View
+          style={{
+            marginTop:20,
+            marginHorizontal: 15,
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems:'center'
+          }}
+        >
+          <View style={{flexDirection: "row",justifyContent:'flex-start'}} >
+          <Ionicons name="settings" size={25} color={Colors.pink} />
+          <MyText size={16} isBold={true} extrastyles={{ marginLeft: 15 }}>
+            Settings
+          </MyText>
+          </View>
+          <Ionicons name="chevron-forward" size={20} />
+        </View>
+        {/* Language */}
+        <View
+          style={{
+            marginTop:20,
+            marginHorizontal: 15,
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems:'center'
+          }}
+        >
+          <View style={{flexDirection: "row",justifyContent:'flex-start'}} >
+          <FontAwesome name="question-circle" size={25} color={Colors.pink} />
+          <MyText size={16} isBold={true} extrastyles={{ marginLeft: 15 }}>
+            FAQ
+          </MyText>
+          </View>
+          <Ionicons name="chevron-forward" size={20} />
+        </View>
+      </View>
     </View>
   );
 }
@@ -79,7 +209,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-start",
   },
   title: {
     fontFamily: "Eudoxus-Sans-Bold",

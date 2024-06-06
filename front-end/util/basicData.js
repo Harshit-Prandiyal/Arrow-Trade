@@ -1,5 +1,5 @@
 import axios from 'axios';
-const url = 'http://192.168.39.155:8000/api/getUserData';
+const url = `${process.env.EXPO_PUBLIC_SERVER_BASE_URL}/api/getUserData`;
 export function fetchBasicData(dataArr){
     return axios.post(url, { tickers: dataArr })
     .then((response) => {
@@ -17,5 +17,6 @@ export function fetchBasicData(dataArr){
         } else {
             console.log("Error occurred during the request setup:", error.message);
         }
+        throw error;  // Re-throw the error to be handled by the caller
     });
 }

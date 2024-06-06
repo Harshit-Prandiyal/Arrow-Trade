@@ -44,33 +44,3 @@ async function handleGetPortfolio(req, res) {
         });
 }
 module.exports={handleGetPortfolio };
-// [
-//     {
-//         "id": "bitcoin",
-//         "symbol": "btc",
-//         "name": "Bitcoin",
-//         "image": "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
-//         "current_price": 29932.89,
-//         "market_cap": 582055057088,
-//         "market_cap_rank": 1,
-//         "fully_diluted_valuation": 628967431597,
-//         "total_volume": 12239229718,
-//         "high_24h": 30176,
-//         "low_24h": 29720,
-//         "price_change_24h": 148.43,
-//         "price_change_percentage_24h": 0.49836,
-//         "market_cap_change_24h": 2107188549,
-//         "market_cap_change_percentage_24h": 0.36334,
-//         "circulating_supply": 19433687,
-//         "total_supply": 21000000,
-//         "max_supply": 21000000,
-//         "ath": 69045,
-//         "ath_change_percentage": -56.62114,
-//         "ath_date": "2021-11-10T14:24:11.849Z",
-//         "atl": 67.81,
-//         "atl_change_percentage": 44069.41253,
-//         "atl_date": "2013-07-06T00:00:00.000Z",
-//         "roi": null,
-//         "last_updated": "2023-07-19T12:45:40.751Z"
-//     }
-// ]

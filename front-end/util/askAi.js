@@ -1,13 +1,9 @@
 import axios from 'axios';
-const url = `${process.env.EXPO_PUBLIC_SERVER_BASE_URL}/api/getStockDetails`;
-export function fetchChartData(id){
-
-    return axios.post(url, { id: id })
+const url = `${process.env.EXPO_PUBLIC_SERVER_BASE_URL}/api/askAi`;
+export function fetchAiResponse(text){
+    return axios.post(url, { prompt: text })
     .then((response) => {
-        console.log("Chart Data request successfully sent!");
-        if (response.data.error) {
-            throw new Error(response.data.error);
-        }
+        console.log("Basic Data request successfully sent!");
         return response.data;
     })
     .catch((error) => {
@@ -21,6 +17,5 @@ export function fetchChartData(id){
         } else {
             console.log("Error occurred during the request setup:", error.message);
         }
-        throw error;  // Re-throw the error to be handled by the caller
     });
 }

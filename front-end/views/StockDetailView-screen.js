@@ -14,7 +14,7 @@ import {
   VictoryCandlestick,
   VictoryAxis,
 } from "victory-native";
-
+import { addToPortfolio, updatePortfolio } from "../models/PortfolioSlice";
 //style imports
 import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "../constants/colors";
@@ -24,96 +24,14 @@ import MyText from "../components/MyText";
 // api requests
 import { fetchChartData } from "../util/chartData";
 import { fetchHOLCData } from "../util/ohlcData";
-const chartData = [
-  {
-    x: "Fri Jul 14 2023",
-    open: 24.38,
-    high: 30.05,
-    low: 24.38,
-    close: 28.07,
-  },
-  {
-    x: "Sat Jul 15 2023",
-    open: 28.18,
-    high: 28.99,
-    low: 26.1,
-    close: 28.06,
-  },
-  {
-    x: "Sun Jul 16 2023",
-    open: 27.79,
-    high: 28.4,
-    low: 27.03,
-    close: 28.4,
-  },
-  {
-    x: "Mon Jul 17 2023",
-    open: 28.14,
-    high: 28.17,
-    low: 27.05,
-    close: 27.24,
-  },
-  {
-    x: "Tue Jul 18 2023",
-    open: 26.94,
-    high: 26.94,
-    low: 25.08,
-    close: 25.43,
-  },
-  {
-    x: "Wed Jul 19 2023",
-    open: 25.47,
-    high: 26.47,
-    low: 25.26,
-    close: 26.09,
-  },
-  {
-    x: "Thu Jul 20 2023",
-    open: 26.34,
-    high: 27.26,
-    low: 26.26,
-    close: 27.04,
-  },
-];
-const HeaderWithBackButton = () => {
-  return (
-    <SafeAreaView
-      style={{
-        width: "95%",
-        flexDirection: "row",
-        justifyContent: "center",
-        marginVertical: 10,
-        alignItems: "center",
-      }}
-    >
-      <TouchableOpacity style={{ marginLeft: 25 }}>
-        <Ionicons name="chevron-back-circle-outline" size={30} color="black" />
-      </TouchableOpacity>
+import { useDispatch, useSelector } from "react-redux";
+import Spinner from 'react-native-loading-spinner-overlay';
+import Toast from 'react-native-toast-message'
 
-      <View
-        style={{
-          flexDirection: "row",
-          flex: 1,
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "red",
-        }}
-      >
-        <MyText isBold={true} size={20}>
-          Coin Detail
-        </MyText>
-      </View>
-      <View
-        style={{
-          flexDirection: "row",
-          flex: 1,
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "blue",
-        }}
-      ></View>
-    </SafeAreaView>
-  );
+const actionType = {
+  buy: "buy",
+  sell: "sell",
+  hold: "hold"
 };
 function StatItem({ name, value, isPrice }) {
   return (
@@ -151,16 +69,67 @@ function MyChart({ chartData }) {
     </VictoryChart>
   );
 }
-
+function addComma(num) {
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+const Button = ({ children, color, onPress }) => {
+  return (
+    <TouchableOpacity
+      style={{
+        backgroundColor: color,
+        borderRadius: 20,
+        paddingVertical: 20,
+        paddingHorizontal: 20,
+        marginHorizontal: 10,
+      }}
+      onPress={onPress}
+    >
+      <View style={{ marginHorizontal: 30 }}>
+        <MyText isBold={true} color={"#fff"} size={16}>
+          {children}
+        </MyText>
+      </View>
+    </TouchableOpacity>
+  );
+};
 export default function StockDetailViewScreen({ route, navigation }) {
   const [chartData, setChartData] = useState([]);
   const [stats, setStats] = useState({});
-  const { id } = route.params;
+  const [loading , setLoading] = useState(false);
+  const { id , current_price } = route.params;
+  console.log(current_price);
+  const userBalance = useSelector((state) => state.auth.user.balance);
+  const dispatch = useDispatch();
+  // functions 
+  const handleAddToPortfolio = async (type) => {
+    const userBalanceNum = parseFloat(userBalance);
+    const currentPriceNum = parseFloat(current_price);
+    if (type === actionType.buy && userBalanceNum < currentPriceNum) {
+      const errorMsg = `Not enough balance to buy ${id}`;
+      Toast.show({
+        type: 'error',
+        text1: 'Insufficient Balance',
+        text2: errorMsg
+      });
+      return;
+    }
+    dispatch(
+      updatePortfolio({ stockId: id, current_price, actionType: type })
+    );
+  };
   useEffect(() => {
     try {
       (async () => {
         //console.log(id);
-        const data = await fetchChartData(id);
+        setLoading(true);
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => {
+            reject(new Error('Request timed out'));
+          }, 5000); // Timeout duration in milliseconds (e.g., 5000ms for 5 seconds)
+        });
+        const chartDatPromise =  fetchChartData(id);
+        const data = await Promise.race([chartDatPromise, timeoutPromise]);
+        setLoading(false);
         if (data) {
           const chartData = convertDateToId(data);
           setChartData(chartData);
@@ -169,6 +138,15 @@ export default function StockDetailViewScreen({ route, navigation }) {
       })();
     } catch (err) {
       console.log(err);
+      setLoading(false);
+      const errorMsg = `error fetching ${id} data from Exchange`;
+      Toast.show({
+        type: 'error',
+        text1: 'Error Occured',
+        text2: errorMsg
+      });
+    }finally{
+      setLoading(false);
     }
     try {
       (async () => {
@@ -182,127 +160,147 @@ export default function StockDetailViewScreen({ route, navigation }) {
       console.log(err);
     }
   }, []);
-  const wentUp = stats.price_change_percentage_24h>=0 ? true : false;
-  const price_change_percentage_24h = stats.price_change_percentage_24h>=0
-    ? stats.price_change_percentage_24h
-    : stats.price_change_percentage_24h*-1;
+  const wentUp = stats.price_change_percentage_24h >= 0 ? true : false;
+  const price_change_percentage_24h =
+    stats.price_change_percentage_24h >= 0
+      ? stats.price_change_percentage_24h
+      : stats.price_change_percentage_24h * -1;
   const image = stats.image
     ? stats.image
     : "https://assets.coingecko.com/coins/images/1/small/bitcoin.png?1547033579";
+  const symbol = stats.symbol ? stats.symbol : "BTC";
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          height: 80,
-          marginHorizontal: 10,
-        }}
-      >
+    <View style={styles.root}>
+      <ScrollView contentContainerStyle={styles.container}>
+      <Spinner
+          visible={loading}
+        />
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            height: 80,
+            marginHorizontal: 10,
+          }}
+        >
+          <View
+            style={{
+              flex: 1,
+              flexDirection: "row",
+              justifyContent: "flex-start",
+              alignItems: "center",
+            }}
+          >
+            <Image
+              source={{
+                uri: image,
+              }}
+              style={{ width: 50, height: 50, marginRight: 10 }}
+            />
+            <View>
+              <MyText isBold={true} size={16}>
+                {symbol.toUpperCase()}
+              </MyText>
+              <MyText color={Colors.lightgray}>{stats.name}</MyText>
+            </View>
+          </View>
+          <View
+            style={{
+              borderRadius: 12,
+              height: 20,
+              backgroundColor: wentUp ? Colors.green69 : Colors.pink,
+              width: 68,
+              alignItems: "center",
+              justifyContent: "center",
+              flexDirection: "row",
+            }}
+          >
+            <View style={{ margin: 2, marginRight: 4 }}>
+              <Ionicons
+                name={wentUp ? "caret-up-outline" : "caret-down-outline"}
+                size={12}
+                color="white"
+              />
+            </View>
+            <MyText isBold={true} color={"white"} size={12}>
+              {price_change_percentage_24h.toFixed(2)}%
+            </MyText>
+          </View>
+        </View>
+
         <View
           style={{
             flex: 1,
-            flexDirection: "row",
-            justifyContent: "flex-start",
-            alignItems: "center",
+            marginHorizontal: 30,
           }}
         >
-          <Image
-            source={{
-              uri: image,
-            }}
-            style={{ width: 50, height: 50, marginRight: 10 }}
-          />
-          <View>
-            <MyText isBold={true} size={16}>
-              {stats.symbol.toUpperCase()}
-            </MyText>
-            <MyText color={Colors.lightgray}>{stats.name}</MyText>
-          </View>
+          <TouchableOpacity>
+            {chartData.length !== 0 ? (
+              <MyChart chartData={chartData} />
+            ) : (
+              <Text>loading</Text>
+            )}
+          </TouchableOpacity>
         </View>
         <View
           style={{
-            borderRadius: 12,
-            height: 20,
-            backgroundColor: wentUp ? Colors.green69 : Colors.pink,
-            width: 68,
-            alignItems: "center",
-            justifyContent: "center",
             flexDirection: "row",
+            justifyContent: "flex-start",
+            width: "100%",
+            marginLeft: 40,
           }}
         >
-          <View style={{ margin: 2, marginRight: 4 }}>
-            <Ionicons
-              name={wentUp ? "caret-up-outline" : "caret-down-outline"}
-              size={12}
-              color="white"
-            />
-          </View>
-          <MyText isBold={true} color={"white"} size={12}>
-            {price_change_percentage_24h.toFixed(2)}%
+          <MyText isBold={true} size={22}>
+            Statistics
           </MyText>
         </View>
-      </View>
+        <View
+          style={{
+            width: 300,
+            backgroundColor: Colors.whitishgrey,
+            marginHorizontal: 30,
+            marginTop: 20,
+            padding: 20,
+            borderRadius: 24,
+          }}
+        >
+          <StatItem
+            name="High"
+            value={stats.high ? addComma(stats.high.toFixed(3)) : 227.29}
+            isPrice={true}
+          />
+          <StatItem
+            name="Low"
+            value={stats.low ? addComma(stats.low.toFixed(3)) : 224.1}
+            isPrice={true}
+          />
 
-      <View
-        style={{
-          flex: 1,
-          marginHorizontal: 30,
-        }}
-      >
-        <TouchableOpacity>
-          {chartData.length !== 0 ? (
-            <MyChart chartData={chartData} />
-          ) : (
-            <Text>loading</Text>
-          )}
-        </TouchableOpacity>
-      </View>
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "flex-start",
-          width: "100%",
-          marginLeft: 40,
-        }}
-      >
-        <MyText isBold={true} size={22}>
-          Statistics
-        </MyText>
-      </View>
-      <View
-        style={{
-          width: 300,
-          backgroundColor: Colors.whitishgrey,
-          marginHorizontal: 30,
-          marginTop: 20,
-          padding: 20,
-          borderRadius: 24,
-          marginBottom: 120,
-        }}
-      >
-        <StatItem
-          name="High"
-          value={stats.high ? stats.high : 227.29}
-          isPrice={true}
-        />
-        <StatItem
-          name="Low"
-          value={stats.low ? stats.low : 224.1}
-          isPrice={true}
-        />
-
-        <StatItem
-          name="Total Volume"
-          value={stats.volume ? stats.volume : 1461009}
-        />
-        <StatItem
-          name="Market Cap"
-          value={stats.market_cap ? stats.market_cap : 43419000000}
-          isPrice={true}
-        />
-      </View>
-    </ScrollView>
+          <StatItem
+            name="Total Volume"
+            value={stats.volume ? addComma(stats.volume) : 1461009}
+          />
+          <StatItem
+            name="Market Cap"
+            value={stats.market_cap ? addComma(stats.market_cap) : 43419000000}
+            isPrice={true}
+          />
+        </View>
+        <View style={styles.row}>
+          <Button
+            color={Colors.Darkblue}
+            onPress={() => handleAddToPortfolio(actionType.buy)}
+          >
+            Buy
+          </Button>
+          <Button
+            color={Colors.pink}
+            onPress={() => handleAddToPortfolio(actionType.sell)}
+          >
+            Sell
+          </Button>
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 const styles = StyleSheet.create({
@@ -312,7 +310,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  root: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
   title: {
     fontFamily: "Eudoxus-Sans-Bold",
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 20,
+    marginBottom: 120,
   },
 });

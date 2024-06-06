@@ -15,9 +15,11 @@ import { Colors } from "../constants/colors";
 import { fetchBasicData } from "../util/basicData";
 import { fetchCoinList } from "../util/coinList";
 import { Ionicons } from "@expo/vector-icons";
-import { addToPortfolio } from "../models/PortfolioSlice";
-import { addToWatchlist } from "../models/WatchlistSlice";
-function DisplayStockData({ item, onPress }) {
+import { addToPortfolio, updatePortfolio } from "../models/PortfolioSlice";
+import { addToWatchlist, updateWatchlist } from "../models/WatchlistSlice";
+import { useDispatch, useSelector } from "react-redux";
+import Spinner from 'react-native-loading-spinner-overlay';
+function DisplayStockData({ item, onLongPress,onPress }) {
   const imageUrl = item.image
     ? item.image
     : "https://assets.coingecko.com/coins/images/1/small/bitcoin.png?1547033579";
@@ -29,8 +31,9 @@ function DisplayStockData({ item, onPress }) {
   return (
     <TouchableOpacity
       onLongPress={() => {
-        onPress(item.id);
+        onLongPress(item.id, item.current_price);
       }}
+      onPress={()=>onPress(item.id,item.current_price)}
     >
       <View
         style={{
@@ -92,12 +95,37 @@ function DisplayStockData({ item, onPress }) {
   );
 }
 
-export default function ExchangeViewScreen() {
-  
+export default function ExchangeViewScreen({navigation}) {
   const [id, setId] = useState("");
-  const [portfolioData, setPortfolioData] = useState([]);
+  const [coinList, setCoinList] = useState([]);
+  const [filteredList, setFilteredList] = useState([]);
+  const [loading , setLoading] = useState(false);
+  const [searchVal, setSearchVal] = useState("");
+  const userId = useSelector((state) => state.auth.user._id);
+  const userBalance = useSelector((state) => state.auth.user.balance);
+  const dispatch = useDispatch();
 
-  function handleCoinBuy(id) {
+  function handleSearchClick(val) {
+    if (val === "") {
+      setFilteredList(coinList);
+      return;
+    }
+    const filterBySearch = coinList.filter((item) => {
+      if (item.name.toLowerCase().includes(val.toLowerCase())) {
+        return item;
+      }
+    });
+    setFilteredList(filterBySearch);
+  }
+  const handleRemoveFromWatchlist = async(id) => {
+    setLoading(true);
+    await dispatch(updateWatchlist({ stockId : id , actionType : "remove" }));
+    setLoading(false);
+  }
+  const handleAddToWatchlist = async (id) => {
+    dispatch(updateWatchlist({ stockId : id , actionType : "add" }));
+  };
+  function handleCoinBuy(id, current_price) {
     const str = `Add ${id} ?`;
     Alert.alert(str, `Select appropriate option :- `, [
       {
@@ -106,37 +134,42 @@ export default function ExchangeViewScreen() {
         style: "cancel",
       },
       {
-        text: "Add To portfolio",
-        style: "destructive",
-        onPress: () => {
-          dispatch(addToPortfolio({ id: id }));
-          console.log("Added to portfolio");
-        },
-      },
-      {
         text: "Add To Watchlist",
         style: "destructive",
-        onPress: () => {
-          dispatch(addToWatchlist({id:id}));
-          console.log("Add to watchlist")
+        onPress: () => handleAddToWatchlist(id),
       },
+      {
+        text: "Remove From Watchlist",
+        style: "destructive",
+        onPress: () => handleRemoveFromWatchlist(id),
       },
     ]);
   }
   useEffect(() => {
-    try{
-      ( async ()=>{
+    try {
+      (async () => {
+        setLoading(true);
         const data = await fetchCoinList();
-        if(data){
-          setPortfolioData(data);
+        setLoading(false);
+        if (data) {
+          setCoinList(data);
         }
-    } )()
-    }catch(err){
+      })();
+    } catch (err) {
       console.log(err);
     }
   }, []);
+
+  useEffect(() => {
+    if (coinList.length > 0) {
+      handleSearchClick(searchVal);
+    }
+  }, [coinList, searchVal]);
   return (
     <View style={styles.container}>
+      <Spinner
+          visible={loading}
+        />
       <SafeAreaView
         style={{ alignItems: "flex-start", width: "100%", marginLeft: 20 }}
       >
@@ -155,20 +188,21 @@ export default function ExchangeViewScreen() {
         >
           <TextInput
             style={styles.input}
-            onChangeText={setId}
-            value={id}
+            onChangeText={setSearchVal}
+            value={searchVal}
             placeholder="Search company , coin..."
           />
         </View>
       </View>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {portfolioData.map((item, index) => {
+        {filteredList.map((item, index) => {
           const uniqueKey = index || item.id;
           return (
             <DisplayStockData
               key={uniqueKey}
               item={item}
-              onPress={(id) => handleCoinBuy(id)}
+              onLongPress={(id, current_price) => handleCoinBuy(id, current_price)}
+              onPress ={ (id,current_price)=> navigation.navigate("StockDetailScreen", { id ,current_price })}
             />
           );
         })}

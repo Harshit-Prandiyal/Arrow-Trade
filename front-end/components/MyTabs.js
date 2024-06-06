@@ -12,33 +12,57 @@ import StockDetailViewScreen from "../views/StockDetailView-screen";
 const Stack = createNativeStackNavigator();
 function HomescreenNavigator() {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: true ,
-      headerStyle: {
-      backgroundColor: '#fff',
-      elevation: 0,
-      shadowOpacity: 0,
-      borderBottomWidth: 0,
-      },
-      }}>
-      <Stack.Screen name="HomeScreen" component={HomeViewScreen} options={{headerShown:false}} />
-      <Stack.Screen name="StockDetailScreen" component={StockDetailViewScreen} />
-      <Stack.Screen name="PortfolioScreen" component={PortfolioViewScreen} options={{headerShown:false}} />
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: "#fff",
+          elevation: 0,
+          shadowOpacity: 0,
+          borderBottomWidth: 0,
+        },
+      }}
+    >
+      <Stack.Screen
+        name="HomeScreen"
+        component={HomeViewScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="StockDetailScreen"
+        component={StockDetailViewScreen}
+      />
+      <Stack.Screen
+        name="PortfolioScreen"
+        component={PortfolioViewScreen}
+        options={{ headerShown: false }}
+      />
       <Stack.Screen name="ExchangeScreen" component={ExchangeViewScreen} />
     </Stack.Navigator>
   );
 }
 function ExchangeScreenNavigator() {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: true ,
-      headerStyle: {
-      backgroundColor: '#fff',
-      elevation: 0,
-      shadowOpacity: 0,
-      borderBottomWidth: 0,
-      },
-      }}>
-      <Stack.Screen name="ExchangeScreen" component={ExchangeViewScreen} options={{headerShown:false}} />
-      <Stack.Screen name="StockDetailScreen" component={StockDetailViewScreen} />
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: "#fff",
+          elevation: 0,
+          shadowOpacity: 0,
+          borderBottomWidth: 0,
+        },
+      }}
+    >
+      <Stack.Screen
+        name="ExchangeScreen"
+        component={ExchangeViewScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="StockDetailScreen"
+        component={StockDetailViewScreen}
+      />
     </Stack.Navigator>
   );
 }
@@ -80,6 +104,7 @@ export function MyTabs() {
         },
         tabBarActiveTintColor: Colors.Darkblue,
         tabBarInactiveTintColor: Colors.lightgray,
+        // tabBarHideOnKeyboard: true,
       }}
     >
       <Tab.Screen
@@ -88,11 +113,7 @@ export function MyTabs() {
         options={{
           tabBarIcon: ({ color }) => (
             <View style={{ alignItems: "center", justifyContent: "center" }}>
-              <Ionicons
-                name="home"
-                size={25}
-                color={color}
-              />
+              <Ionicons name="home" size={25} color={color} />
             </View>
           ),
         }}
@@ -103,11 +124,7 @@ export function MyTabs() {
         options={{
           tabBarIcon: ({ color }) => (
             <View style={{ alignItems: "center", justifyContent: "center" }}>
-              <Ionicons
-                name="pie-chart"
-                size={25}
-                color={color}
-              />
+              <Ionicons name="pie-chart" size={25} color={color} />
             </View>
           ),
         }}
@@ -117,11 +134,7 @@ export function MyTabs() {
         component={ExchangeScreenNavigator}
         options={{
           tabBarIcon: ({ color }) => (
-            <Ionicons
-                name="repeat"
-                size={25}
-                color={'white'}
-              />
+            <Ionicons name="repeat" size={25} color={"white"} />
           ),
           tabBarButton: (props) => <CustomTabBarButton {...props} />,
         }}
@@ -132,13 +145,10 @@ export function MyTabs() {
         options={{
           tabBarIcon: ({ color }) => (
             <View style={{ alignItems: "center", justifyContent: "center" }}>
-              <Ionicons
-                name="stats-chart"
-                size={25}
-                color={color}
-              />
+              <Ionicons name="stats-chart" size={25} color={color} />
             </View>
           ),
+          // tabBarStyle: { display: "none" },
         }}
       />
       <Tab.Screen
@@ -147,11 +157,7 @@ export function MyTabs() {
         options={{
           tabBarIcon: ({ color }) => (
             <View style={{ alignItems: "center", justifyContent: "center" }}>
-              <Ionicons
-                name="person"
-                size={25}
-                color={color}
-              />
+              <Ionicons name="person" size={25} color={color} />
             </View>
           ),
         }}

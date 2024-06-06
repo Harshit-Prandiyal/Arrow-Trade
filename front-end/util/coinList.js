@@ -1,10 +1,11 @@
 import axios from 'axios';
-const url = 'http://192.168.39.155:8000/api/listCoins';
+const url = `${process.env.EXPO_PUBLIC_SERVER_BASE_URL}/api/listCoins`;
 export function fetchCoinList(){
     return axios.get(url)
     .then((response) => {
         console.log("coins list request successfully sent!");
-        return response.data.coins;
+        // console.log(response.data);
+        return response.data;
     })
     .catch((error) => {
         if (error.response) {
@@ -17,5 +18,6 @@ export function fetchCoinList(){
         } else {
             console.log("Error occurred during the request setup:", error.message);
         }
+        throw error;  // Re-throw the error to be handled by the caller
     });
 }

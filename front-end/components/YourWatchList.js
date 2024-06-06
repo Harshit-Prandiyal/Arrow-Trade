@@ -35,13 +35,12 @@ const EmptyWatchlist = () => {
   );
 };
 
-export default function YourWatchList({ data ,onPress}) {
-
+export default function YourWatchList({ data, onPress, onLongPress }) {
   //item renderer function
   function renderWatchlistItem({ item }) {
     const pressHandler = () => {
       onPress(item.id);
-    }
+    };
 
     const imageUrl = item.image
       ? item.image
@@ -53,7 +52,10 @@ export default function YourWatchList({ data ,onPress}) {
         : -1 * item.price_change_percentage_24h;
 
     return (
-      <TouchableOpacity onPress={pressHandler} >
+      <TouchableOpacity
+        onPress={pressHandler}
+        onLongPress={() => onLongPress(item.id)}
+      >
         <View
           style={{
             height: 100,
